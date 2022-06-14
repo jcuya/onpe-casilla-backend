@@ -1,0 +1,48 @@
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Ciudadano, CiudadanoDocument } from '../schemas/ciudadano.schema';
+import { ObtenerDatosPersonaDniResultDto } from '../dto/ObtenerDatosPersonaDniResultDto';
+
+export class CiudadaoService {
+  constructor(
+    @InjectModel(Ciudadano.name)
+    private ciudadanoDocument: Model<CiudadanoDocument>,
+  ) {}
+
+  async obtenerPersonaPorDni(
+    dni: string,
+  ): Promise<ObtenerDatosPersonaDniResultDto> {
+    console.log('dni is', dni);
+    const ciudadano = await this.ciudadanoDocument.findOne(
+      {
+        tidocumento: 'DNI',
+        nudocumento: dni,
+      },
+      {
+        _id: 0,
+        nombre: 1,
+        paterno: 1,
+        materno: 1,
+        nopadre: 1,
+        nomadre: 1,
+      },
+    );
+    if (!ciudadano) {
+      return null;
+    }
+    console.log(ciudadano);
+    return {
+      nombres: ciudadano.nombre,
+      apellidos: ciudadano.paterno + ' ' + ciudadano.materno,
+      nombrePadre: this.nombresPadre(ciudadano.nopadre),
+      nombreMadre: this.nombresMadre(ciudadano.nomadre),
+    };
+  }
+
+  nombresPadre(nombre: string): string[] {
+    return ['JULIO', 'JUAN', 'DANIEL', nombre];
+  }
+  nombresMadre(nombre: string): string[] {
+    return ['JULIA', 'JUANA', 'DANIELA', nombre];
+  }
+}
