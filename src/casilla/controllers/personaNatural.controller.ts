@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ObtenerDatosPersonaDniDto } from '../dto/ObtenerDatosPersonaDniDto';
+import { ObtenerDatosPersonaDniDto, RequestValidateData } from '../dto/ObtenerDatosPersonaDniDto';
 import { CiudadaoService } from '../services/ciudadao.service';
-import { ObtenerDatosPersonaDniResultDto } from '../dto/ObtenerDatosPersonaDniResultDto';
+import { ObtenerDatosPersonaDniResultDto, ResponseValidateData } from '../dto/ObtenerDatosPersonaDniResultDto';
 
 @Controller()
 export class PersonaNaturalController {
@@ -14,5 +14,12 @@ export class PersonaNaturalController {
     return await this.ciudadaoService.obtenerPersonaPorDni(
       obtenerDatosPersonaDniDto.dni,
     );
+  }
+
+  @Post('validarPersona')
+  async validarPersona(
+    @Body() request: RequestValidateData,
+  ): Promise<ResponseValidateData> {
+    return await this.ciudadaoService.validarDatosPersona( request);
   }
 }
