@@ -42,6 +42,7 @@ export class CiudadaoService {
 
 
   async validarDatosPersona( request : RequestValidateData){
+    console.log("datos", request);
     const ciudadano = await this.ciudadanoDocument.findOne(
       {
         tidocumento: 'DNI',

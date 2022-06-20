@@ -18,8 +18,7 @@ export class PersonaNaturalController {
 
   @Post('validarPersona')
   async validarPersona(
-    @Body() request: RequestValidateData,
-  ): Promise<ResponseValidateData> {
+    @Body() request: RequestValidateData ): Promise<ResponseValidateData> {
     return await this.ciudadaoService.validarDatosPersona( request);
   }
 }

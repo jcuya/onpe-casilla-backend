@@ -16,6 +16,11 @@ import { Juridica, JuridicaSchema } from './schemas/juridica.schema';
 import { Ciudadano, CiudadanoSchema } from './schemas/ciudadano.schema';
 import { CiudadaoService } from './services/ciudadao.service';
 import { PersonaNaturalController } from './controllers/personaNatural.controller';
+import { User, UserSchema } from './schemas/user.schema';
+import { Inbox, InboxSchema } from './schemas/inbox.schema';
+import { UserInbox, UserInboxSchema } from './schemas/user_inbox.schema';
+import { Utils } from './utils/util';
+import { CasillaController } from './controllers/casilla.controller';
 
 @Module({
   imports: [
@@ -28,13 +33,17 @@ import { PersonaNaturalController } from './controllers/personaNatural.controlle
       { name: CodigoVerificacion.name, schema: CodigoVerificacionSchema },
       { name: Juridica.name, schema: JuridicaSchema },
       { name: Ciudadano.name, schema: CiudadanoSchema },
-    ]),
+      { name: User.name, schema: UserSchema },
+      { name: Inbox.name, schema: InboxSchema },
+      { name: UserInbox.name, schema: UserInboxSchema }
+    ])
   ],
   controllers: [
     IndexController,
     UbigeosController,
     ValidacionCorreoController,
     PersonaNaturalController,
+    CasillaController
   ],
   providers: [
     CasillaService,
