@@ -35,7 +35,7 @@ private userInboxDocument: Model<userInboxDocument>,
       var respuestaUsuario = await new this.userDocument({
         doc : req.numeroDocumento,
         doc_type :req.tipoDocumento,
-        profile: "",
+        profile: "citizen",
         password :"",
         name :req.nombres,
         lastname : req.apePaterno,
