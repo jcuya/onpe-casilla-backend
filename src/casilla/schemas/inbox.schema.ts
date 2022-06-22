@@ -36,6 +36,9 @@ export class Inbox {
   attachments: Archivo= new Archivo() ;
 
   @Prop()
+  imageDNI : Archivo = new Archivo();
+
+  @Prop()
   register_user_id: string;
 
   @Prop()
