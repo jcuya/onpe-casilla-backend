@@ -40,7 +40,7 @@ private representanteDocument: Model<RepresentanteDocument>,
 
     let FileDni = Filesupload.files[0];
 
-    let FileRepresent = Filesupload.filerepresent[0];
+    
 
     try{
       const pass = cryptoJS.randomBytes(5).toString('hex');
@@ -68,6 +68,7 @@ private representanteDocument: Model<RepresentanteDocument>,
       if(!respuestaUsuario) return {status :false , mensaje :'Error al guardar usuario'}
 
       if(data.tipoPersona === 'j'){
+          let FileRepresent = Filesupload.filerepresent[0];
           var rep = JSON.parse(data.representante)
           var pdf = await this.copyFile(FileRepresent.buffer,'box/',FileRepresent.originalname,rep.numeroDocumento,Date.now(),false,false);
         
