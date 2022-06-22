@@ -3,6 +3,12 @@ import { Document } from 'mongoose';
 
 export type InboxDocument = Inbox & Document;
 
+
+export class Archivo {
+  path : string;
+  name : string;
+}
+
 @Schema({ collection: 'inbox' })
 export class Inbox {
   @Prop()
@@ -27,7 +33,7 @@ export class Inbox {
   acreditation_type: string;
 
   @Prop()
-  attachments: string;
+  attachments: Archivo= new Archivo() ;
 
   @Prop()
   register_user_id: string;
@@ -37,6 +43,9 @@ export class Inbox {
   
   @Prop()
   create_user: string;
+
+  @Prop()
+  estado : string;
 }
 
 export const InboxSchema = SchemaFactory.createForClass(Inbox);

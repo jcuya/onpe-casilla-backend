@@ -21,6 +21,7 @@ import { Inbox, InboxSchema } from './schemas/inbox.schema';
 import { UserInbox, UserInboxSchema } from './schemas/user_inbox.schema';
 import { Utils } from './utils/util';
 import { CasillaController } from './controllers/casilla.controller';
+import { Representante, RepresentanteSchema } from './schemas/representante.schema';
 
 @Module({
   imports: [
@@ -35,7 +36,9 @@ import { CasillaController } from './controllers/casilla.controller';
       { name: Ciudadano.name, schema: CiudadanoSchema },
       { name: User.name, schema: UserSchema },
       { name: Inbox.name, schema: InboxSchema },
-      { name: UserInbox.name, schema: UserInboxSchema }
+      { name: UserInbox.name, schema: UserInboxSchema },
+      { name: Representante.name, schema: RepresentanteSchema }
+      
     ])
   ],
   controllers: [

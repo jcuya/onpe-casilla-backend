@@ -3,10 +3,14 @@ import { Model } from "mongoose";
 import { Inbox, InboxDocument } from "./casilla/schemas/inbox.schema";
 import { User, UserDocument } from "./casilla/schemas/user.schema";
 import { UserInbox, userInboxDocument } from "./casilla/schemas/user_inbox.schema";
-
-
+import * as fs from 'fs';
+import * as cryptoJS from 'crypto';
+import sha256 from 'crypto-js/sha256';
+import { Representante, RepresentanteDocument } from "./casilla/schemas/representante.schema";
 
 export class CasillaService {
+
+default = 'PENDIENTE';
 
 constructor( 
 @InjectModel(User.name)
@@ -18,6 +22,8 @@ private inboxDocument: Model<InboxDocument>,
 @InjectModel(UserInbox.name)
 private userInboxDocument: Model<userInboxDocument>,
 
+@InjectModel(Representante.name)
+private representanteDocument: Model<RepresentanteDocument>,
 ){
 
 }
@@ -28,22 +34,30 @@ private userInboxDocument: Model<userInboxDocument>,
 
 
   async createBox(req){
-    console.log("USEREEEER", req)
+    
+    let data = req.body;
+    let Filesupload = req.files;
 
+    let FileDni = Filesupload.files[0];
+
+    let FileRepresent = Filesupload.filerepresent[0];
 
     try{
+      const pass = cryptoJS.randomBytes(5).toString('hex');
+
+
       var respuestaUsuario = await new this.userDocument({
-        doc : req.numeroDocumento,
-        doc_type :req.tipoDocumento,
+        doc : data.numeroDocumento,
+        doc_type :data.tipoDocumento,
         profile: "citizen",
-        password :"",
-        name :req.nombres,
-        lastname : req.apePaterno,
-        second_lastname : req.apeMaterno,
-        email : req.correoElectronico,
-        cellphone : req.numeroCelular,
-        phone : req.telefono,
-        address : req.domicilioFisico,
+        password :pass,
+        name :data.nombres,
+        lastname : data.apePaterno,
+        second_lastname : data.apeMaterno,
+        email : data.correoElectronico,
+        cellphone : data.numeroCelular,
+        phone : data.telefono,
+        address : data.domicilioFisico,
         organization_name : "",
         register_user_id : "",
         created_at : null,
@@ -53,27 +67,60 @@ private userInboxDocument: Model<userInboxDocument>,
 
       if(!respuestaUsuario) return {status :false , mensaje :'Error al guardar usuario'}
 
+      if(data.tipoPersona === 'j'){
+          var rep = JSON.parse(data.representante)
+          var pdf = await this.copyFile(FileRepresent.buffer,'box/',FileRepresent.originalname,rep.numeroDocumento,Date.now(),false,false);
+        
+        var respuestaRepresentante = await new this.representanteDocument({
+          tipoDocumentoAdjunto : rep.tipoDocumentoAdjunto,
+          tipoDocumentoAdjuntoNombre : rep.tipoDocumentoAdjuntoNombre,
+          tipoDocumento : rep.tipoDocumento,
+          numeroDocumento : rep.numeroDocumento,
+          rucUser : data.numeroDocumento,
+          nombreCompleto : rep.nombreCompleto,
+          correoElectronico : rep.correoElectronico,
+          numeroCelular : rep.numeroCelular,
+          domicilioFisico : rep.domicilioFisico,
+          cargo : rep.cargo,
+          cargoNombre: rep.cargoNombre,
+          archivo : pdf,
+          created_at : Date.now(),
+        }).save();
+  
+        if(!respuestaRepresentante) return {status :false , mensaje :'Error al guardar usuario'}
+  
+      }
+
+
+
+
+
+      var img = await this.copyFile(FileDni.buffer,'box/',FileDni.originalname,data.numeroDocumento,Date.now(),false,false);
 
       var respuestaInbox = await new this.inboxDocument({
-        doc : req.numeroDocumento,
-        doc_type :req.tipoDocumento,
-        email : req.correoElectronico,
-        cellphone : req.numeroCelular,
-        phone : req.telefono,
-        address : req.domicilioFisico,
+        doc : data.numeroDocumento,
+        doc_type :data.tipoDocumento,
+        email : data.correoElectronico,
+        cellphone : data.numeroCelular,
+        phone : data.telefono,
+        address : data.domicilioFisico,
         acreditation_type : "",
-        attachments : null,
+        attachments : img,
         register_user_id : "",
         created_at : null,
-        create_user : "JOSÉ CUYA"
+        create_user : "JOSÉ CUYA",
+        estado : this.default
       }).save();
 
-      if(!respuestaInbox) return {status :false , mensaje :'Error al guardar casilla'}
 
+      if(!respuestaInbox) return {status :false , mensaje :'Error al guardar casilla'}
+      console.log("respuesta inbox", respuestaInbox)
+       let id_inbox =  respuestaInbox._id;
       var respuestaUserInbox = await new this.userInboxDocument({
-        doc : req.numeroDocumento,
-        doc_type :req.tipoDocumento,
+        doc : data.numeroDocumento,
+        doc_type :data.tipoDocumento,
         profile: "owner",
+        inbox_id : id_inbox
         
       }).save();
 
@@ -174,6 +221,43 @@ private userInboxDocument: Model<userInboxDocument>,
 
 
   }
+
+   stringHash (text)  {
+    return cryptoJS.createHash('sha256').update(text).digest('hex');
+}
+
+   getPath (prePath) {
+    let _date = new Date(Date.now());
+    var retorno = prePath + _date.getFullYear() + '/' + (_date.getMonth() + 1) + '/' + _date.getDate() + '/';
+
+    
+    return retorno;
+}
+
+   async copyFile  (Buffer, newPath, filename, doc, timestamp, isTmp, isBlocked) {
+    const path_upload = process.env.PATH_UPLOAD;
+    const path_upload_tmp = process.env.PATH_UPLOAD_TMP;
+    try {
+        let rawData = Buffer//fs.readFileSync(oldPathFile);
+        let pathAttachment = this.getPath(newPath);
+        
+
+        let stringHashNameFile = this.stringHash(cryptoJS.randomBytes(5).toString('hex')  + '_' + doc + '_' + timestamp + '_' + filename);
+
+        let newPathFile = (isTmp ? path_upload_tmp : path_upload) + "/" + pathAttachment + stringHashNameFile;
+
+        fs.mkdirSync((isTmp ? path_upload_tmp : path_upload) + "/" + pathAttachment, {recursive: true});
+
+        fs.writeFileSync(newPathFile, rawData);
+
+        return {path: pathAttachment + stringHashNameFile, name: filename, blocked: isBlocked};
+
+    } catch (err) {
+        console.log("ERROOOOOORR" , err)
+        return false;
+    }
+
+}
 
 
 

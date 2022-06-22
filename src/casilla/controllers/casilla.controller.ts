@@ -1,6 +1,7 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { CasillaService } from '../../casilla.service';
-import { ResponseValidateData } from '../dto/ObtenerDatosPersonaDniResultDto';
+import { requestGlobal, ResponseValidateData } from '../dto/ObtenerDatosPersonaDniResultDto';
 
 @Controller()
 export class CasillaController {
@@ -11,8 +12,13 @@ export class CasillaController {
   
 
   @Post('create-box')
-  async createBox(@Body() dto: any): Promise<ResponseValidateData> {
-
+ // @UseInterceptors(FilesInterceptor('files'))
+ @UseInterceptors(FileFieldsInterceptor([
+  {name: 'files', maxCount: 1},
+  {name: 'filerepresent', maxCount: 2}
+]))
+  async createBox(@Req() dto , @UploadedFiles()  files: {files? : any, filerepresent? : any} ): Promise<ResponseValidateData> {
+    
     return await this.casillaService.createBox(dto);
   }
 
