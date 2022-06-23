@@ -60,7 +60,7 @@ private representanteDocument: Model<RepresentanteDocument>,
         address : data.domicilioFisico,
         organization_name : "",
         register_user_id : "",
-        created_at : null,
+        created_at : Date.now(),
         updated_password : false,
         create_user : "JOSÉ CUYA"
       }).save();
@@ -97,7 +97,7 @@ private representanteDocument: Model<RepresentanteDocument>,
 
 
       var img = await this.copyFile(FileDni.buffer,'box/',FileDni.originalname,data.numeroDocumento,Date.now(),false,false);
-
+      let id_usuario =  respuestaUsuario._id;
       var respuestaInbox = await new this.inboxDocument({
         doc : data.numeroDocumento,
         doc_type :data.tipoDocumento,
@@ -108,9 +108,9 @@ private representanteDocument: Model<RepresentanteDocument>,
         acreditation_type : "",
         attachments : null,
         imageDNI : img,
-        register_user_id : "",
-        created_at : null,
-        create_user : "JOSÉ CUYA",
+        register_user_id : id_usuario,
+        created_at : Date.now(),
+        create_user : "owner",
         estado : this.default
       }).save();
 
