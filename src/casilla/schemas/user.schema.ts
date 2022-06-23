@@ -46,6 +46,9 @@ export class User {
   Ubigeo: string;
 
   @Prop()
+  PaginaWeb: string;
+
+  @Prop()
   register_user_id: string;
 
   @Prop()
