@@ -1,5 +1,5 @@
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { Inbox, InboxDocument } from "./casilla/schemas/inbox.schema";
 import { User, UserDocument } from "./casilla/schemas/user.schema";
 import { UserInbox, userInboxDocument } from "./casilla/schemas/user_inbox.schema";
@@ -108,7 +108,7 @@ private representanteDocument: Model<RepresentanteDocument>,
         acreditation_type : "",
         attachments : null,
         imageDNI : img,
-        register_user_id : id_usuario,
+        register_user_id : new mongoose.Types.ObjectId(id_usuario),
         created_at : Date.now(),
         create_user : "owner",
         estado : this.default
