@@ -36,6 +36,9 @@ export class Representante {
   domicilioFisico: string;
 
   @Prop()
+  Ubigeo: string;
+
+  @Prop()
   cargo: string;
 
   @Prop()

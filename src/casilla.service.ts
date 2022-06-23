@@ -57,12 +57,13 @@ private representanteDocument: Model<RepresentanteDocument>,
         email : data.correoElectronico,
         cellphone : data.numeroCelular,
         phone : data.telefono,
+        Ubigeo : data.ubigeo,
         address : data.domicilioFisico,
         organization_name : "",
         register_user_id : "",
         created_at : Date.now(),
         updated_password : false,
-        create_user : "JOSÉ CUYA"
+        create_user : "owner"
       }).save();
 
       if(!respuestaUsuario) return {status :false , mensaje :'Error al guardar usuario'}
@@ -83,6 +84,7 @@ private representanteDocument: Model<RepresentanteDocument>,
           numeroCelular : rep.numeroCelular,
           domicilioFisico : rep.domicilioFisico,
           cargo : rep.cargo,
+          Ubigeo: rep.ubigeo,
           cargoNombre: rep.cargoNombre,
           archivo : pdf,
           created_at : Date.now(),
@@ -91,10 +93,6 @@ private representanteDocument: Model<RepresentanteDocument>,
         if(!respuestaRepresentante) return {status :false , mensaje :'Error al guardar usuario'}
   
       }
-
-
-
-
 
       var img = await this.copyFile(FileDni.buffer,'box/',FileDni.originalname,data.numeroDocumento,Date.now(),false,false);
       let id_usuario =  respuestaUsuario._id;
@@ -116,7 +114,6 @@ private representanteDocument: Model<RepresentanteDocument>,
 
 
       if(!respuestaInbox) return {status :false , mensaje :'Error al guardar casilla'}
-      console.log("respuesta inbox", respuestaInbox)
        let id_inbox =  respuestaInbox._id;
       var respuestaUserInbox = await new this.userInboxDocument({
         doc : data.numeroDocumento,

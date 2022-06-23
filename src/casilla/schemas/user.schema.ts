@@ -43,6 +43,9 @@ export class User {
   organization_name: string;
 
   @Prop()
+  Ubigeo: string;
+
+  @Prop()
   register_user_id: string;
 
   @Prop()
