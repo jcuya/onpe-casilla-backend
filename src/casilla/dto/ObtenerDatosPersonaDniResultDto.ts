@@ -30,3 +30,5 @@ export class requestGlobal{
   provincia!: string;
   distrito!: string;
 }
+
+
