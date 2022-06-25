@@ -3,11 +3,16 @@ import { Model } from 'mongoose';
 import { Ciudadano, CiudadanoDocument } from '../schemas/ciudadano.schema';
 import { ObtenerDatosPersonaDniResultDto } from '../dto/ObtenerDatosPersonaDniResultDto';
 import { RequestValidateData } from '../dto/ObtenerDatosPersonaDniDto';
+import { Inject } from '@nestjs/common';
+import { Client } from 'nestjs-soap';
+import * as request from 'request-promise';
+import { responseSunat } from '../dto/ObtenerDatosSUNAT';
 
 export class CiudadaoService {
   constructor(
     @InjectModel(Ciudadano.name)
     private ciudadanoDocument: Model<CiudadanoDocument>,
+    //@Inject('MY_SOAP_CLIENT') private readonly mySoapClient: Client
   ) {}
 
   async obtenerPersonaPorDni(
@@ -106,6 +111,50 @@ export class CiudadaoService {
     }
 
 
+  }
+
+  async validarDatosSUNAT(ruc){
+    
+    try {
+      var asd : responseSunat = new responseSunat();
+      console.log("RUUUUUUUUUUUC" , ruc.ruc)
+
+      //var data = this.mySoapClient.DatosPrincipales({numdo :ruc});
+      let response = await request({
+        uri: `${process.env.URL_SUNAT}`,
+        qs: {
+            numruc: ruc.ruc,
+            out: 'json'
+        },
+        headers: {
+            'Accept': 'application/json'
+        },
+        resolveWithFullResponse: true
+    });
+
+    console.log("RESPUESTA", response)
+
+    if (response.statusCode == 200) {
+        asd = {
+          razonSocial : JSON.parse(response.body),
+          success : true
+        }
+        }else{
+          asd = {
+            razonSocial : "error servicio sunat",
+            success : false
+          }
+        }
+
+      return asd;
+      
+    } catch (error) {
+      console.error(error)
+      // return  {
+      //   razonSocial : error,
+      //   success : false
+      // }
+    }
   }
 
 }
