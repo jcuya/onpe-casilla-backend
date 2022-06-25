@@ -5,7 +5,8 @@ import { ObtenerDatosPersonaDniResultDto } from '../dto/ObtenerDatosPersonaDniRe
 import { RequestValidateData } from '../dto/ObtenerDatosPersonaDniDto';
 import { Inject } from '@nestjs/common';
 import { Client } from 'nestjs-soap';
-import * as requestnpm from 'request-promise';
+import * as request from 'request-promise';
+import { responseSunat } from '../dto/ObtenerDatosSUNAT';
 
 export class CiudadaoService {
   constructor(
@@ -113,16 +114,16 @@ export class CiudadaoService {
   }
 
   async validarDatosSUNAT(ruc){
-    var asd : responseSunat = new responseSunat();
+    
     try {
-
-      
+      var asd : responseSunat = new responseSunat();
+      console.log("RUUUUUUUUUUUC" , ruc.ruc)
 
       //var data = this.mySoapClient.DatosPrincipales({numdo :ruc});
-      let response = await requestnpm.request({
+      let response = await request({
         uri: `${process.env.URL_SUNAT}`,
         qs: {
-            numruc: ruc,
+            numruc: ruc.ruc,
             out: 'json'
         },
         headers: {
@@ -131,6 +132,8 @@ export class CiudadaoService {
         resolveWithFullResponse: true
     });
 
+    console.log("RESPUESTA", response)
+
     if (response.statusCode == 200) {
         asd = {
           razonSocial : JSON.parse(response.body),
@@ -138,7 +141,7 @@ export class CiudadaoService {
         }
         }else{
           asd = {
-            razonSocial : "",
+            razonSocial : "error servicio sunat",
             success : false
           }
         }
@@ -146,10 +149,11 @@ export class CiudadaoService {
       return asd;
       
     } catch (error) {
-      return asd = {
-        razonSocial : "",
-        success : false
-      }
+      console.error(error)
+      // return  {
+      //   razonSocial : error,
+      //   success : false
+      // }
     }
   }
 

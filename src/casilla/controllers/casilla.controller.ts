@@ -2,6 +2,7 @@ import { Body, Controller, Post, Req, UploadedFile, UploadedFiles, UseIntercepto
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { CasillaService } from '../../casilla.service';
 import { requestGlobal, ResponseValidateData } from '../dto/ObtenerDatosPersonaDniResultDto';
+import { responseSunat } from '../dto/ObtenerDatosSUNAT';
 import { CiudadaoService } from '../services/ciudadao.service';
 
 @Controller()
