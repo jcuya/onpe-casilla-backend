@@ -5,15 +5,11 @@ import { SoapModule } from 'nestjs-soap';
 import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true
-    })
-    ,CasillaModule,
-
-
-    SoapModule.register(
-      { clientName: 'MY_DUMMY_CLIENT', uri: 'https://ws3.pide.gob.pe/Rest/Sunat/DatosPrincipales' }
-    )
+    CasillaModule
+    // ,
+    // SoapModule.register(
+    //   { clientName: 'MY_DUMMY_CLIENT', uri: 'https://ws3.pide.gob.pe/Rest/Sunat/DatosPrincipales' }
+    // )
 
 
   ],
