@@ -34,7 +34,7 @@ private representanteDocument: Model<RepresentanteDocument>,
 
 
   async createBox(req){
-    
+    console.log("lo que se envia a guardar", req);
     let data = req.body;
     let Filesupload = req.files;
 
