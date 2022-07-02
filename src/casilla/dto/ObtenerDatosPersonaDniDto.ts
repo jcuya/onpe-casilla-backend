@@ -1,5 +1,6 @@
 export class ObtenerDatosPersonaDniDto {
   dni: string;
+  recaptcha : string;
 }
 
 export class RequestValidateData{

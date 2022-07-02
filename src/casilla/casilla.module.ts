@@ -27,10 +27,11 @@ import { Representante, RepresentanteSchema } from './schemas/representante.sche
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(
-      `mongodb://${process.env.MONGODB_WEB_USERNAME}:${process.env.MONGODB_WEB_PASSWORD}@${process.env.MONGODB_WEB_HOST}:${process.env.MONGODB_WEB_PORT}`, 
-        {
-          dbName:`${process.env.MONGODB_WEB_DATABASE}`
-        }
+      // `mongodb://${process.env.MONGODB_WEB_USERNAME}:${process.env.MONGODB_WEB_PASSWORD}@${process.env.MONGODB_WEB_HOST}:${process.env.MONGODB_WEB_PORT}`, 
+      //   {
+      //     dbName:`${process.env.MONGODB_WEB_DATABASE}`
+      //   }
+      `mongodb://${process.env.DATABASE_HOST}/${process.env.DATABASE_NAME}`,
       ),
     MongooseModule.forFeature([
       { name: Ubigeo.name, schema: UbigeoSchema },

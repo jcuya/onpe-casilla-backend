@@ -2,7 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Ciudadano, CiudadanoDocument } from '../schemas/ciudadano.schema';
 import { ObtenerDatosPersonaDniResultDto } from '../dto/ObtenerDatosPersonaDniResultDto';
-import { RequestValidateData } from '../dto/ObtenerDatosPersonaDniDto';
+import { ObtenerDatosPersonaDniDto, RequestValidateData } from '../dto/ObtenerDatosPersonaDniDto';
 import { Inject } from '@nestjs/common';
 import { Client } from 'nestjs-soap';
 import * as request from 'request-promise';
@@ -15,14 +15,17 @@ export class CiudadaoService {
     //@Inject('MY_SOAP_CLIENT') private readonly mySoapClient: Client
   ) {}
 
-  async obtenerPersonaPorDni(
-    dni: string,
-  ): Promise<ObtenerDatosPersonaDniResultDto> {
-    console.log('dni is', dni);
+  async obtenerPersonaPorDni(info: ObtenerDatosPersonaDniDto,ipAddress ): Promise<ObtenerDatosPersonaDniResultDto> {
+   
+    let resultado = await this.isValid(info.recaptcha, ipAddress);
+    if (!resultado) {
+      return null;
+  }
+
     const ciudadano = await this.ciudadanoDocument.findOne(
       {
         tidocumento: 'DNI',
-        nudocumento: dni,
+        nudocumento: info.dni,
       },
       {
         _id: 0,
@@ -44,6 +47,35 @@ export class CiudadaoService {
       nombreMadre: this.nombresMadre(ciudadano.nomadre),
     };
   }
+
+
+
+  async isValid (code, ip) {
+    try {
+        let gResponse = await request({
+            url: 'https://www.google.com/recaptcha/api/siteverify',
+            method: 'POST',
+            json: true,
+            form: {
+                secret: process.env.RECAPTCHA_SECRET,
+                response: code,
+                remoteip: ip
+            }
+        });
+
+        if (gResponse) {
+            return gResponse.success;
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+    return false;
+}
+
+
+
+
 
 
   async validarDatosPersona( request : RequestValidateData){
