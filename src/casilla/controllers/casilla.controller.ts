@@ -3,15 +3,16 @@ import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestj
 import { CasillaService } from '../../casilla.service';
 import { requestGlobal, ResponseValidateData } from '../dto/ObtenerDatosPersonaDniResultDto';
 import { responseSunat } from '../dto/ObtenerDatosSUNAT';
-import { CiudadaoService } from '../services/ciudadao.service';
+import { CiudadanoService } from '../services/ciudadano.service';
+
 
 @Controller()
 export class CasillaController {
-  constructor(private readonly casillaService: CasillaService,private readonly ciudadaoService: CiudadaoService) {
+  constructor(private readonly casillaService: CasillaService,private readonly ciudadaoService: CiudadanoService) {
   }
 
 
-  
+
 
   @Post('create-box')
  // @UseInterceptors(FilesInterceptor('files'))

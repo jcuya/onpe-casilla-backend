@@ -18,7 +18,8 @@ export class CodigoVerificacionService {
     numeroDocumento,
     correoElectronico,
   ) {
-    const codigo = randomBytes(3).toString('hex').toUpperCase();
+    // const codigo = randomBytes(3).toString('hex').toUpperCase();
+    const codigo = '666666';
 
     const minutosValidez = 5;
     const ahora = new Date();

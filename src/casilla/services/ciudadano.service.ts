@@ -8,7 +8,7 @@ import { Client } from 'nestjs-soap';
 import * as request from 'request-promise';
 import { responseSunat } from '../dto/ObtenerDatosSUNAT';
 
-export class CiudadaoService {
+export class CiudadanoService {
   constructor(
     @InjectModel(Ciudadano.name)
     private ciudadanoDocument: Model<CiudadanoDocument>,
@@ -82,8 +82,7 @@ export class CiudadaoService {
     console.log("datos", request);
     const ciudadano = await this.ciudadanoDocument.findOne(
       {
-        tidocumento: 'DNI',
-        nudocumento: request.dni,
+        dni: request.nroDocumento,
       },
       {
         _id: 0,
@@ -93,6 +92,7 @@ export class CiudadaoService {
         digverifica : 1
       },
     );
+    console.log("validar ciudadano:", ciudadano);
 
     if (ciudadano) {
       var dateNacRequest = this.changueDate(new Date(request.fechaNacimiento)) //this.changueDate(request.fechaNacimiento);

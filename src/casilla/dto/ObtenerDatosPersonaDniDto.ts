@@ -3,11 +3,12 @@ export class ObtenerDatosPersonaDniDto {
   recaptcha : string;
 }
 
-export class RequestValidateData{
-
-  dni !: number;
-  nombrePadre !: string;
-  nombreMadre !: string;
+export class RequestValidateData {
+  tipoDocumento!: string;
+  nroDocumento!: string;
+  nombrePadre: string;
+  nombreMadre: string;
   fechaNacimiento !:Date;
-  codigoVerifi !: string;
+  codigoVerifi: string;
+  correo!: string;
 }

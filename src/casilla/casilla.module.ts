@@ -14,7 +14,7 @@ import { ValidacionCorreoController } from './controllers/validacionCorreo.contr
 import { CodigoVerificacionService } from './services/codigoVerificacion.service';
 import { Juridica, JuridicaSchema } from './schemas/juridica.schema';
 import { Ciudadano, CiudadanoSchema } from './schemas/ciudadano.schema';
-import { CiudadaoService } from './services/ciudadao.service';
+import { CiudadanoService } from './services/ciudadano.service';
 import { PersonaNaturalController } from './controllers/personaNatural.controller';
 import { User, UserSchema } from './schemas/user.schema';
 import { Inbox, InboxSchema } from './schemas/inbox.schema';
@@ -22,16 +22,17 @@ import { UserInbox, UserInboxSchema } from './schemas/user_inbox.schema';
 import { Utils } from './utils/util';
 import { CasillaController } from './controllers/casilla.controller';
 import { Representante, RepresentanteSchema } from './schemas/representante.schema';
+import { UserService } from "./services/user.service";
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(
-      // `mongodb://${process.env.MONGODB_WEB_USERNAME}:${process.env.MONGODB_WEB_PASSWORD}@${process.env.MONGODB_WEB_HOST}:${process.env.MONGODB_WEB_PORT}`, 
-      //   {
-      //     dbName:`${process.env.MONGODB_WEB_DATABASE}`
-      //   }
-      `mongodb://${process.env.DATABASE_HOST}/${process.env.DATABASE_NAME}`,
+      `mongodb://${process.env.MONGODB_WEB_USERNAME}:${process.env.MONGODB_WEB_PASSWORD}@${process.env.MONGODB_WEB_HOST}:${process.env.MONGODB_WEB_PORT}`,
+        {
+          dbName:`${process.env.MONGODB_WEB_DATABASE}`
+        }
+      
       ),
     MongooseModule.forFeature([
       { name: Ubigeo.name, schema: UbigeoSchema },
@@ -56,7 +57,8 @@ import { Representante, RepresentanteSchema } from './schemas/representante.sche
     CasillaService,
     UbigeosService,
     CodigoVerificacionService,
-    CiudadaoService,
+    CiudadanoService,
+    UserService,
   ],
 })
 export class CasillaModule {}

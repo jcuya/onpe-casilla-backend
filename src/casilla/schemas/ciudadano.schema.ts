@@ -3,13 +3,11 @@ import { Document } from 'mongoose';
 
 export type CiudadanoDocument = Ciudadano & Document;
 
-@Schema({ collection: 'ciudadanos' })
+@Schema({ collection: 'persona' })
 export class Ciudadano {
-  @Prop()
-  tidocumento: string;
 
   @Prop()
-  nudocumento: string;
+  dni: string;
 
   @Prop()
   nombre: string;
@@ -24,31 +22,13 @@ export class Ciudadano {
   fenac: Date;
 
   @Prop()
-  feemision: Date;
-
-  @Prop()
   digverifica: string;
-
-  @Prop()
-  email: string;
-
-  @Prop()
-  nucelular: string;
-
-  @Prop()
-  grupovota: string;
-
-  @Prop()
-  direccion: string;
 
   @Prop()
   nopadre: string;
 
   @Prop()
   nomadre: string;
-
-  @Prop()
-  esreg: string;
 }
 
 export const CiudadanoSchema = SchemaFactory.createForClass(Ciudadano);
