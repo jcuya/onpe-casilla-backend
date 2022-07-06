@@ -6,17 +6,20 @@ import {
 } from '../schemas/codigoVerificacion.schema';
 import { randomBytes } from 'crypto';
 import { readFileSync } from 'fs';
+import { EmailService } from './email.service';
+
 
 export class CodigoVerificacionService {
   constructor(
     @InjectModel(CodigoVerificacion.name)
     private codigoVerificacionModel: Model<CodigoVerificacionDocument>,
+    private emailService: EmailService,
   ) {}
 
   async enviarCodigoVerificacion(
     tipoDocumento,
     numeroDocumento,
-    correoElectronico,
+    correo,
   ) {
     // const codigo = randomBytes(3).toString('hex').toUpperCase();
     const codigo = '666666';
@@ -28,7 +31,7 @@ export class CodigoVerificacionService {
     const result = await this.codigoVerificacionModel.insertMany({
       tipoDocumento: tipoDocumento,
       numeroDocumento: numeroDocumento,
-      correoElectronico: correoElectronico,
+      correoElectronico: correo,
       codigo: codigo,
       fechaCreacion: ahora,
       validoHasta: validez,
@@ -41,13 +44,12 @@ export class CodigoVerificacionService {
     } else {
       id = null;
     }
-    this.enviarCorreo(correoElectronico, this.crearPlantillaCorreo(codigo));
+    this.emailService.enviarCorreo( process.env.EMAIL_ORIGEN, correo, 'Nueva Notificación - SISEN', this.crearPlantillaCorreo(codigo));
     return {
       idEnvio: id,
     };
   }
 
-  enviarCorreo(correoElectronico: string, contenido: string) {}
 
   crearPlantillaCorreo(codigo: string) {
     const content = readFileSync('./template/enviar-codigo-verificacion.html');

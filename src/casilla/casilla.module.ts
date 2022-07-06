@@ -23,6 +23,7 @@ import { Utils } from './utils/util';
 import { CasillaController } from './controllers/casilla.controller';
 import { Representante, RepresentanteSchema } from './schemas/representante.schema';
 import { UserService } from "./services/user.service";
+import { EmailService } from "./services/email.service";
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { UserService } from "./services/user.service";
     CodigoVerificacionService,
     CiudadanoService,
     UserService,
+    EmailService,
   ],
 })
 export class CasillaModule {}

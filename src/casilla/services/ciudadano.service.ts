@@ -18,14 +18,13 @@ export class CiudadanoService {
   async obtenerPersonaPorDni(info: ObtenerDatosPersonaDniDto,ipAddress ): Promise<ObtenerDatosPersonaDniResultDto> {
    
     let resultado = await this.isValid(info.recaptcha, ipAddress);
-    if (!resultado) {
+    /*if (!resultado) {
       return null;
-  }
+  }*/
 
     const ciudadano = await this.ciudadanoDocument.findOne(
       {
-        tidocumento: 'DNI',
-        nudocumento: info.dni,
+        dni: info.dni,
       },
       {
         _id: 0,
@@ -99,8 +98,13 @@ export class CiudadanoService {
       var dateNacMongo =  new Date (ciudadano.fenac);
        dateNacMongo.setDate(dateNacMongo.getDate()+ 1);
        var result = this.changueDate(dateNacMongo);
+       console.log ("Comparación fechaNacimiento --->> dato front: ",dateNacRequest, " -- ||  Dato BD:", result, "\n");
+       console.log ("Comparación NombrePadre --->> dato front: ",request.nombrePadre, " -- ||  Dato BD:", ciudadano.nopadre, "\n");
+       console.log ("Comparación NombreMadre --->> dato front: ", request.nombreMadre, " -- ||  Dato BD:", ciudadano.nomadre, "\n");
+       console.log ("Comparación DigitoVerificacion --->> dato front: ",request.codigoVerifi, " -- ||  Dato BD:", ciudadano.digverifica , "\n");
 
-      if(request.nombrePadre === ciudadano.nopadre && request.nombreMadre === ciudadano.nomadre && request.codigoVerifi == ciudadano.digverifica && dateNacRequest === result){
+       if(request.codigoVerifi == ciudadano.digverifica && dateNacRequest === result){
+       //if(request.nombrePadre === ciudadano.nopadre && request.nombreMadre === ciudadano.nomadre && request.codigoVerifi == ciudadano.digverifica && dateNacRequest === result){
 
         return {
           status : true,
@@ -110,7 +114,7 @@ export class CiudadanoService {
       }else{
         return {
           status : false,
-          mensaje : "Alguno de los siguientes datos no coincide. (Nombre padre - Nombre madres - Fecha nacimiento - Dígito verificación"
+          mensaje : "Alguno de sus datos personales no coincide, por favor verifique e intenta nuevamente."
         }
       }
 

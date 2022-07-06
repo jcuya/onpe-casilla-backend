@@ -29,6 +29,7 @@
     "crypto-js": "^4.1.1",
     "mongoose": "^6.3.6",
     "nestjs-soap": "^2.2.2",
+    "nodemailer": "^6.7.6",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.2",
     "request-ip": "^3.0.2",
