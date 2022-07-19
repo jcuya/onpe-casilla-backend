@@ -40,11 +40,12 @@ private representanteDocument: Model<RepresentanteDocument>,
 
     let FileDni = Filesupload.files[0];
 
-    
-
     try{
       const pass = cryptoJS.randomBytes(5).toString('hex');
-
+      data.tipoDocumento = data.tipoDocumento.toLowerCase();
+      data.tipoPersona = data.tipoPersona.toLowerCase();
+      data.apePaterno = typeof data.apePaterno !== 'undefined' ? data.apePaterno : '';
+      data.apeMaterno = typeof data.apeMaterno !== 'undefined' ? data.apeMaterno : '';
 
       var respuestaUsuario = await new this.userDocument({
         doc : data.numeroDocumento,

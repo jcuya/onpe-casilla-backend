@@ -1,14 +1,23 @@
+import { IsEmail, IsNotEmpty } from "class-validator";
+
 export class ObtenerDatosPersonaDniDto {
   dni: string;
-  recaptcha : string;
+  recaptcha: string;
 }
 
 export class RequestValidateData {
-  tipoDocumento!: string;
-  nroDocumento!: string;
-  nombrePadre: string;
-  nombreMadre: string;
-  fechaNacimiento !:Date;
+  @IsNotEmpty()
+  tipoDocumento: string;
+
+  @IsNotEmpty()
+  nroDocumento: string;
+
+  @IsNotEmpty()
+  fechaNacimiento: Date;
+
+  @IsNotEmpty()
   codigoVerifi: string;
-  correo!: string;
+
+  @IsEmail()
+  correo: string;
 }

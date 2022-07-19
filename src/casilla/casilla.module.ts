@@ -24,6 +24,7 @@ import { CasillaController } from './controllers/casilla.controller';
 import { Representante, RepresentanteSchema } from './schemas/representante.schema';
 import { UserService } from "./services/user.service";
 import { EmailService } from "./services/email.service";
+import { InboxService } from './services/inbox.service';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { EmailService } from "./services/email.service";
     CiudadanoService,
     UserService,
     EmailService,
+    InboxService,
   ],
 })
 export class CasillaModule {}

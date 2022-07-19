@@ -41,8 +41,8 @@ export class EmailService {
         process.env.EMAIL_ANONYMOUS === 'true'
           ? transporterAnonymous
           : transporter;
-      const result = await transport.verify();
-      console.info(`Verificar servidor SMTP (Anonymous: ${process.env.EMAIL_ANONYMOUS} )`, result);
+      // const result = await transport.verify();
+      // console.info(`Verificar servidor SMTP (Anonymous: ${process.env.EMAIL_ANONYMOUS} )`, result);
       await transport.sendMail({
         from: origen,
         to: destino,
