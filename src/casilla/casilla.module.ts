@@ -25,6 +25,8 @@ import { Representante, RepresentanteSchema } from './schemas/representante.sche
 import { UserService } from "./services/user.service";
 import { EmailService } from "./services/email.service";
 import { InboxService } from './services/inbox.service';
+import { MpveService } from './services/mpve.service';
+import { CaptchaService } from "./services/captcha.service";
 
 @Module({
   imports: [
@@ -53,7 +55,7 @@ import { InboxService } from './services/inbox.service';
     UbigeosController,
     ValidacionCorreoController,
     PersonaNaturalController,
-    CasillaController
+    CasillaController,
   ],
   providers: [
     CasillaService,
@@ -63,6 +65,8 @@ import { InboxService } from './services/inbox.service';
     UserService,
     EmailService,
     InboxService,
+    MpveService,
+    CaptchaService,
   ],
 })
 export class CasillaModule {}

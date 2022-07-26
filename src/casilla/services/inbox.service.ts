@@ -19,13 +19,13 @@ export class InboxService {
       {
         doc_type: docType,
         doc: docNumber,
-        estado: InboxService.ESTADO_APROBADO,
+        $or: [{ status: InboxService.ESTADO_APROBADO }, { status: null }],
       },
       {
         _id: 0,
         doc_type: 1,
         doc: 1,
-        estado: 1,
+        status: 1,
       },
     );
     if (!casillero) {
@@ -42,13 +42,13 @@ export class InboxService {
     const user = await this.inboxDocumentModel.findOne(
       {
         email: correo,
-        estado: InboxService.ESTADO_APROBADO,
+        $or: [{ status: InboxService.ESTADO_APROBADO }, { status: null }],
       },
       {
         _id: 0,
         doc_type: 1,
         doc: 1,
-        estado: 1,
+        status: 1,
         email: 1,
       },
     );

@@ -7,38 +7,40 @@ import * as fs from 'fs';
 import * as cryptoJS from 'crypto';
 import sha256 from 'crypto-js/sha256';
 import { Representante, RepresentanteDocument } from "./casilla/schemas/representante.schema";
+import { CaptchaService } from "./casilla/services/captcha.service";
 
 export class CasillaService {
 
-default = 'PENDIENTE';
+static readonly DEFAULT_STATUS = 'PENDIENTE';
 
-constructor( 
-@InjectModel(User.name)
-private userDocument: Model<UserDocument>,
-
-@InjectModel(Inbox.name)
-private inboxDocument: Model<InboxDocument>,
-
-@InjectModel(UserInbox.name)
-private userInboxDocument: Model<userInboxDocument>,
-
-@InjectModel(Representante.name)
-private representanteDocument: Model<RepresentanteDocument>,
-){
-
-}
+  constructor(
+    @InjectModel(User.name)
+    private userDocument: Model<UserDocument>,
+    @InjectModel(Inbox.name)
+    private inboxDocument: Model<InboxDocument>,
+    @InjectModel(UserInbox.name)
+    private userInboxDocument: Model<userInboxDocument>,
+    @InjectModel(Representante.name)
+    private representanteDocument: Model<RepresentanteDocument>,
+    private captchaService: CaptchaService,
+  ) {}
 
   saludar(nombre: string) {
     return 'hola ' + nombre;
   }
 
-
-  async createBox(req){
-    console.log("lo que se envia a guardar", req);
-    let data = req.body;
-    let Filesupload = req.files;
+  async createBox(body, files, ipAddress) {
+    console.log("create box request: ", body);
+    let data = body;
+    let Filesupload = files;
 
     let FileDni = Filesupload.files[0];
+
+    await this.captchaService.validarCapcha(body.recaptcha, ipAddress);
+
+    if (!this.validFile(FileDni)) {
+        return {status :false , mensaje :'Archivo imagen de DNI está dañado o no es válido'};
+    }
 
     try{
       const pass = cryptoJS.randomBytes(5).toString('hex');
@@ -46,6 +48,10 @@ private representanteDocument: Model<RepresentanteDocument>,
       data.tipoPersona = data.tipoPersona.toLowerCase();
       data.apePaterno = typeof data.apePaterno !== 'undefined' ? data.apePaterno : '';
       data.apeMaterno = typeof data.apeMaterno !== 'undefined' ? data.apeMaterno : '';
+
+      if (data.apePaterno == '' && data.apeMaterno == '') {
+        return { status: false, mensaje: 'Ingrese por lo menos un apellido' };
+      }
 
       var respuestaUsuario = await new this.userDocument({
         doc : data.numeroDocumento,
@@ -65,7 +71,8 @@ private representanteDocument: Model<RepresentanteDocument>,
         register_user_id : "",
         created_at : Date.now(),
         updated_password : false,
-        create_user : "owner"
+        create_user : "owner",
+        status : CasillaService.DEFAULT_STATUS
       }).save();
 
       if(!respuestaUsuario) return {status :false , mensaje :'Error al guardar usuario'}
@@ -111,7 +118,7 @@ private representanteDocument: Model<RepresentanteDocument>,
         register_user_id : new mongoose.Types.ObjectId(id_usuario),
         created_at : Date.now(),
         create_user : "owner",
-        estado : this.default
+        status : CasillaService.DEFAULT_STATUS
       }).save();
 
 
@@ -121,8 +128,8 @@ private representanteDocument: Model<RepresentanteDocument>,
         doc : data.numeroDocumento,
         doc_type :data.tipoDocumento,
         profile: "owner",
+        user_id : id_usuario,
         inbox_id : id_inbox
-        
       }).save();
 
       if(!respuestaUserInbox) return {status :false , mensaje :'Error al guardar usuario-casilla'}
@@ -131,7 +138,6 @@ private representanteDocument: Model<RepresentanteDocument>,
         status : true,
         mensaje : "success"
       }
-
 
     }
     catch(e){
@@ -222,6 +228,31 @@ private representanteDocument: Model<RepresentanteDocument>,
 
 
   }
+
+  validFile(file) {
+      const signedFile = file.buffer;
+      if (this.validatebyteFile(file.mimetype, signedFile)) {
+          return true;
+      }
+    return false;
+  }
+
+    validatebyteFile(typeFile, signedFile) {
+        switch (typeFile) {
+            case 'application/pdf':
+                return (Buffer.isBuffer(signedFile) && signedFile.lastIndexOf('%PDF-') === 0 && signedFile.lastIndexOf('%%EOF') > -1);
+            case 'image/jpg':
+            case 'image/jpeg':
+                return (/^(ffd8ffe([0-9]|[a-f]){1}$)/g).test(signedFile.toString('hex').substring(0, 8));
+            case 'image/png':
+                return signedFile.toString('hex').startsWith('89504e47');
+            case 'image/bmp':
+            case 'image/x-ms-bmp':
+                return signedFile.toString('hex').startsWith('424d');
+            default:
+                return false;
+        }
+    }
 
    stringHash (text)  {
     return cryptoJS.createHash('sha256').update(text).digest('hex');

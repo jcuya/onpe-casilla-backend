@@ -3,24 +3,20 @@ import { Model } from 'mongoose';
 import { Ciudadano, CiudadanoDocument } from '../schemas/ciudadano.schema';
 import { ObtenerDatosPersonaDniResultDto } from '../dto/ObtenerDatosPersonaDniResultDto';
 import { ObtenerDatosPersonaDniDto, RequestValidateData } from '../dto/ObtenerDatosPersonaDniDto';
-import { Inject } from '@nestjs/common';
-import { Client } from 'nestjs-soap';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import * as request from 'request-promise';
 import { responseSunat } from '../dto/ObtenerDatosSUNAT';
+import { CaptchaService } from "./captcha.service";
 
 export class CiudadanoService {
   constructor(
     @InjectModel(Ciudadano.name)
     private ciudadanoDocument: Model<CiudadanoDocument>,
-    //@Inject('MY_SOAP_CLIENT') private readonly mySoapClient: Client
+    private captchaService: CaptchaService,
   ) {}
 
-  async obtenerPersonaPorDni(info: ObtenerDatosPersonaDniDto,ipAddress ): Promise<ObtenerDatosPersonaDniResultDto> {
-
-    let resultado = await this.isValid(info.recaptcha, ipAddress);
-  //   if (!resultado) {
-  //     return null;
-  // }
+  async obtenerPersonaPorDni(info: ObtenerDatosPersonaDniDto, ipAddress): Promise<ObtenerDatosPersonaDniResultDto> {
+    await this.captchaService.validarCapcha(info.recaptcha, ipAddress);
 
     let result = null;
     try {
@@ -45,32 +41,12 @@ export class CiudadanoService {
         };
       }
     } catch (err) {
-      console.error('Error validating questions in questionService: ' + err);
-    }
-    return null;
-  }
-
-
-  async isValid(code, ip) {
-    try {
-      let gResponse = await request({
-        url: 'https://www.google.com/recaptcha/api/siteverify',
-        method: 'POST',
-        json: true,
-        form: {
-          secret: process.env.RECAPTCHA_SECRET,
-          response: code,
-          remoteip: ip
-        },
-      });
-
-      if (gResponse) {
-        return gResponse.success;
+      console.error('Error al obtener datos del ciudadano desde el servidor: ' + err);
+      if (err.statusCode == 404) {
+        throw new HttpException('El dni solicitado no existe', HttpStatus.NOT_FOUND);
       }
-    } catch (err) {
-      console.error(err);
     }
-    return false;
+    throw new HttpException('Error al obtener información', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   async validarDatosPersona(req: RequestValidateData) {

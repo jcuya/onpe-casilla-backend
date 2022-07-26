@@ -48,7 +48,7 @@ export class Inbox {
   create_user: string;
 
   @Prop()
-  estado : string;
+  status : string;
 }
 
 export const InboxSchema = SchemaFactory.createForClass(Inbox);

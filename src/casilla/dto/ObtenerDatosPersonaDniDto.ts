@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from "class-validator";
+import {IsEmail, IsNotEmpty, Matches} from "class-validator";
 
 export class ObtenerDatosPersonaDniDto {
   dni: string;
@@ -10,6 +10,7 @@ export class RequestValidateData {
   tipoDocumento: string;
 
   @IsNotEmpty()
+  @Matches('^[0-9]*$')
   nroDocumento: string;
 
   @IsNotEmpty()

@@ -15,6 +15,9 @@ export class UserInbox {
   profile: string;
 
   @Prop()
+  user_id : string;
+
+  @Prop()
   inbox_id : string;
 
   
