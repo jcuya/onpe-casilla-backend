@@ -3,6 +3,7 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 
 export class CaptchaService {
   async validarCapcha(code, ip) {
+    console.log(code, ' ', ip);
     let result = false;
     try {
       const gResponse = await request({

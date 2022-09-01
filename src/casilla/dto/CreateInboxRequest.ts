@@ -62,6 +62,6 @@ export class CreateInboxRequest {
   @IsNotEmpty()
   ubigeo: string;
 
-  @IsNotEmpty()
+  // @IsNotEmpty()
   recaptcha: string;
 }

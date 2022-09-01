@@ -18,7 +18,7 @@ export class PersonaNaturalController {
     @Body() obtenerDatosPersonaDniDto: ObtenerDatosPersonaDniDto,
     @Ip() ipAddress
   ): Promise<ObtenerDatosPersonaDniResultDto> {
-    return await this.ciudadanoService.obtenerPersonaPorDni(
+    return await this.ciudadanoService.obtenerPersonaPorDniBd(
       obtenerDatosPersonaDniDto,ipAddress
     );
   }
@@ -30,16 +30,15 @@ export class PersonaNaturalController {
     let resultado;
     request.tipoDocumento = request.tipoDocumento.toLowerCase();
     if (request.tipoDocumento == 'dni') {
-      resultado = await this.ciudadanoService.validarDatosPersona(request);
+      resultado = await this.ciudadanoService.validarDatosPersonaBd(request);
     } else {
       resultado = { status: true, mensaje: 'Datos correctos.' };
     }
     if (resultado.status) {
-      let existUserWithDoc = await this.inboxService.existeCasilleroConDoc(request.tipoDocumento, request.nroDocumento);
-      let existUserWithEmail = await this.inboxService.existeCasilleroConCorreo(request.correo);
-      if (existUserWithDoc || existUserWithEmail) {
+      const inboxWithDoc = await this.inboxService.existeCasilleroConDoc(request.tipoDocumento, request.nroDocumento);
+      if (inboxWithDoc.exist) {
         resultado.status = false;
-        resultado.mensaje = 'Usted ya cuenta con Casilla electrónica ingrese aquí https://casillaelectronica.onpe.gob.pe/#/login y haga clic en "Olvidé mi contraseña"';
+        resultado.mensaje = inboxWithDoc.message;
       }
     }
     return resultado;

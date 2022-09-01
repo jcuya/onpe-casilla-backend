@@ -49,6 +49,32 @@ export class CiudadanoService {
     throw new HttpException('Error al obtener información', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  async obtenerPersonaPorDniBd(info: ObtenerDatosPersonaDniDto, ipAddress ): Promise<ObtenerDatosPersonaDniResultDto> {
+
+    await this.captchaService.validarCapcha(info.recaptcha, ipAddress);
+
+    const ciudadano = await this.ciudadanoDocument.findOne(
+        {
+          dni: info.dni,
+        },
+        {
+          _id: 0,
+          nombre: 1,
+          paterno: 1,
+          materno: 1,
+        },
+    );
+    if (!ciudadano) {
+      throw new HttpException('El dni solicitado no existe', HttpStatus.NOT_FOUND);
+    }
+    console.log(ciudadano);
+    return {
+      nombres: ciudadano.nombre,
+      apellidoPaterno: ciudadano.paterno,
+      apellidoMaterno: ciudadano.materno,
+    };
+  }
+
   async validarDatosPersona(req: RequestValidateData) {
     console.log('datos', req);
     let ciudadano = null;
@@ -91,6 +117,43 @@ export class CiudadanoService {
         return {
           status: false,
           mensaje: 'Alguno de sus datos personales no coinciden, por favor verifique e intente nuevamente.',
+        };
+      }
+    } else {
+      return { status: false, mensaje: 'Persona no encontrada.' };
+    }
+  }
+
+  async validarDatosPersonaBd(request: RequestValidateData) {
+    console.log('datos', request);
+    const ciudadano = await this.ciudadanoDocument.findOne(
+        {
+          dni: request.nroDocumento,
+        },
+        {
+          _id: 0,
+          fenac: 1,
+          digverifica: 1,
+        },
+    );
+    console.log('validar ciudadano:', ciudadano);
+
+    if (ciudadano) {
+      var dateNacRequest = this.changueDate(new Date(request.fechaNacimiento)); //this.changueDate(request.fechaNacimiento);
+      var dateNacMongo = new Date(ciudadano.fenac);
+      dateNacMongo.setDate(dateNacMongo.getDate());
+      var result = this.changueDate(dateNacMongo);
+
+      if (request.codigoVerifi == ciudadano.digverifica && dateNacRequest === result) {
+        return {
+          status: true,
+          mensaje: 'Datos correctos.',
+        };
+      } else {
+        return {
+          status: false,
+          mensaje:
+              'Alguno de sus datos personales no coinciden, por favor verifique e intente nuevamente.',
         };
       }
     } else {

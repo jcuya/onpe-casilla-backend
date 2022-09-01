@@ -51,7 +51,7 @@ export class EmailService {
       });
       return true;
     } catch (error) {
-      console.error(`Ocurrió un erro al enviar el correo (Anonymous: ${process.env.EMAIL_ANONYMOUS}): `,error);
+      console.error(`Ocurrió un error al enviar el correo (Anonymous: ${process.env.EMAIL_ANONYMOUS}): `);
       return false;
     }
   }

@@ -36,7 +36,7 @@ static readonly DEFAULT_STATUS = 'PENDIENTE';
 
     let FileDni = Filesupload.files[0];
 
-    await this.captchaService.validarCapcha(body.recaptcha, ipAddress);
+    //await this.captchaService.validarCapcha(body.recaptcha, ipAddress);
 
     if (!this.validFile(FileDni)) {
         return {status :false , mensaje :'Archivo imagen de DNI está dañado o no es válido'};
